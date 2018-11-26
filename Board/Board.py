@@ -14,8 +14,7 @@ class Board:
     # columns go from 1 to 7 here, hence the "column - 1"
     def add_chip(self, player, column):
         empty_row = self.get_top_column(column - 1)
-        if empty_row != -1:
-            self.set_board_position(empty_row, column - 1, player)
+        self.set_board_position(empty_row, column - 1, player)
 
     def set_board_position(self, row, column, player):
         self.board[row][column] = player
@@ -50,6 +49,36 @@ class Board:
         return [row, column]
 
     def is_possible_move(self, row, column):
-        if row == self.get_top_column(column):
+        if (row == 0 and self.get_board_position(row, column) == 0) \
+                or (row != 0 and row == self.get_top_column(column)):
             return True
         return False
+
+    def is_possible_move_column(self, column):
+        if self.get_board_position(0, column) == 0:
+            return True
+        return False
+
+    def top_board_spaces(self):
+        highest_positions = []
+        top = 5
+        for column in range(0, self.columns):
+            if self.get_top_column(column) < top:
+                highest_positions.clear()
+                top = self.get_top_column(column)
+                highest_positions += [column]
+            elif self.get_top_column(column) == top:
+                highest_positions += [column]
+        return highest_positions
+
+    def bottom_board_spaces(self):
+        lowest_positions = []
+        bottom = 0
+        for column in range(0, self.columns):
+            if self.get_top_column(column) > bottom:
+                lowest_positions.clear()
+                bottom = self.get_top_column(column)
+                lowest_positions += [column]
+            elif self.get_top_column(column) == bottom:
+                lowest_positions += [column]
+        return lowest_positions

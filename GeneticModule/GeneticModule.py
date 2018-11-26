@@ -1,6 +1,7 @@
 import random as rnd
 import operator as op
 from Agent.Agent import Agent
+from AgentActions.AgentActions import AgentActions
 
 
 class GeneticModule:
