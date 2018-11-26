@@ -57,6 +57,7 @@ class GeneticModule:
                 parent_agent_1.get_char_3(),
                 parent_agent_2.get_char_4()
             )
+            child_agent.clear_victory_number()
             self.mutate_agent(child_agent)
             new_generation += [child_agent]
         self.set_actual_agents(new_generation)
