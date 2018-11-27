@@ -64,7 +64,7 @@ class Board:
         top = 5
         for column in range(0, self.columns):
             if self.get_top_column(column) < top:
-                highest_positions.clear()
+                highest_positions = []
                 top = self.get_top_column(column)
                 highest_positions += [column]
             elif self.get_top_column(column) == top:
@@ -76,7 +76,7 @@ class Board:
         bottom = 0
         for column in range(0, self.columns):
             if self.get_top_column(column) > bottom:
-                lowest_positions.clear()
+                lowest_positions = []
                 bottom = self.get_top_column(column)
                 lowest_positions += [column]
             elif self.get_top_column(column) == bottom:

@@ -1,5 +1,6 @@
 import random as rnd
 import operator as op
+import copy
 from Agent.Agent import Agent
 from Game.Game import Game
 
@@ -29,8 +30,14 @@ class GeneticModule:
             agent.clear_victory_number()
 
         best_agents_list = []
-        next_agents_number = self.get_next_gen_agents()
-        agents_array = self.actual_agents.copy()
+        next_agents_number = float(self.get_next_gen_agents())
+        next_agents_percentage = len(self.actual_agents) * (next_agents_number/100)
+        next_agents_percentage = int(next_agents_percentage)
+
+        if next_agents_percentage == 0:
+            next_agents_percentage += 1
+
+        agents_array = copy.deepcopy(self.actual_agents)
         position = 1
         original_position = 0
         while agents_array:
@@ -48,11 +55,11 @@ class GeneticModule:
             original_position += 1
 
         self.actual_agents.sort(key=op.attrgetter('victory_number'), reverse=True)
-        agents_array = self.actual_agents.copy()
-        while next_agents_number > 0 and agents_array:
+        agents_array = copy.deepcopy(self.actual_agents)
+        while next_agents_percentage > 0 and agents_array:
             best_agent = agents_array.pop(0)
             best_agents_list += [best_agent]
-            next_agents_number -= 1
+            next_agents_percentage -= 1
 
         return best_agents_list
 
@@ -75,16 +82,30 @@ class GeneticModule:
         new_generation = []
         while best_agents:
             parent_agent_1 = best_agents.pop(0)
-            parent_agent_2 = best_agents.pop(0)
-            child_agent = Agent(
-                parent_agent_1.get_char_1(),
-                parent_agent_2.get_char_2(),
-                parent_agent_1.get_char_3(),
-                parent_agent_2.get_char_4()
-            )
-            child_agent.clear_victory_number()
-            self.mutate_agent(child_agent)
-            new_generation += [child_agent]
+            if not best_agents:
+                child_agent = copy.deepcopy(parent_agent_1)
+                child_agent.clear_victory_number()
+                self.mutate_agent(child_agent)
+                new_generation += [child_agent]
+            else:
+                parent_agent_2 = best_agents.pop(0)
+                child_agent_1 = Agent(
+                    parent_agent_1.get_char_1(),
+                    parent_agent_2.get_char_2(),
+                    parent_agent_1.get_char_3(),
+                    parent_agent_2.get_char_4()
+                )
+                child_agent_2 = Agent(
+                    parent_agent_2.get_char_1(),
+                    parent_agent_1.get_char_2(),
+                    parent_agent_2.get_char_3(),
+                    parent_agent_1.get_char_4()
+                )
+                child_agent_1.clear_victory_number()
+                child_agent_2.clear_victory_number()
+                self.mutate_agent(child_agent_1)
+                self.mutate_agent(child_agent_2)
+                new_generation += [child_agent_1, child_agent_2]
         self.set_actual_agents(new_generation)
         self.set_population_number(len(self.actual_agents))
 
@@ -92,9 +113,22 @@ class GeneticModule:
     def get_best_offspring(self):
         gen_number = self.get_gen_number()
         while gen_number > 0 or len(self.actual_agents) == 1:
+            print("Current generation: " + str(self.get_gen_number() - gen_number))
+            print("Individuals: " + str(len(self.actual_agents)))
             self.crossover_offspring()
             gen_number -= 1
-        return self.actual_agents[0]
+            if len(self.actual_agents) == 1:
+                break
+        best_individual = self.actual_agents[0]
+        str_agent = ""
+        str_agent += str(best_individual.get_char_1())
+        str_agent += ","
+        str_agent += str(best_individual.get_char_2())
+        str_agent += ","
+        str_agent += str(best_individual.get_char_3())
+        str_agent += ","
+        str_agent += str(best_individual.get_char_4())
+        return str_agent
 
     def set_gen_number(self, gen_number):
         self.gen_number = gen_number
