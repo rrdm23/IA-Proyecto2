@@ -106,6 +106,7 @@ class AgentActions:
                 turn_executed += 1
 
         print("Turn finished")
+        return False
 
     def check_end_game(self, board):
         for col in range(1, 8):
