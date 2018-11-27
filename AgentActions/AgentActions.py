@@ -9,13 +9,14 @@ class AgentActions:
     def __init__(self, agent):
         self.agent = agent
         self.player_number = self.agent.player_number
+        self.has_options = 0
 
     def play(self, board, column):
         board.add_chip(self.player_number, column)
 
     def execute_turn(self, board):
         about_to_end = self.check_end_game(board)
-        print(about_to_end)
+        # print(about_to_end)
         column_range = []
         turn_executed = 0
         if about_to_end == "Blocked opponent":
@@ -43,7 +44,7 @@ class AgentActions:
             elif len(column_range_start) == 1 and turn_executed == 0:
                 final_decision = column_range_start[0] + 1
                 if board.is_possible_move_column(final_decision - 1):
-                    print("Final decision: ", final_decision)
+                    # print("Column played: ", final_decision)
                     self.play(board, final_decision)
                     turn_executed += 1
 
@@ -62,7 +63,7 @@ class AgentActions:
             elif len(column_range_move_3) == 1 and turn_executed == 0:
                 final_decision = column_range_move_3[0] + 1
                 if board.is_possible_move_column(final_decision - 1):
-                    print("Final decision: ", final_decision)
+                    # print("Column played: ", final_decision)
                     self.play(board, final_decision)
                     turn_executed += 1
 
@@ -81,7 +82,7 @@ class AgentActions:
             elif len(column_range_final) == 1 and turn_executed == 0:
                 final_decision = column_range_final[0] + 1
                 if board.is_possible_move_column(final_decision - 1):
-                    print("Final decision: ", final_decision)
+                    # print("Column played: ", final_decision)
                     self.play(board, final_decision)
                     turn_executed += 1
 
@@ -91,21 +92,30 @@ class AgentActions:
                     column_range = [0, 1, 2, 3, 4, 5, 6]
                 rnd_index = rnd.randint(0, len(column_range) - 1)
                 final_decision = column_range[rnd_index] + 1
-                print("Decision: ", final_decision)
-                print("Is possible in column?: ", board.is_possible_move_column(final_decision - 1))
+                # print("Decision: ", final_decision)
+                # print("Is possible in column?: ", board.is_possible_move_column(final_decision - 1))
+                not_possible = 0
                 while not board.is_possible_move_column(final_decision - 1):
                     column_range.remove(final_decision - 1)
                     if not column_range:
-                        column_range = [0, 1, 2, 3, 4, 5, 6]
+                        if not_possible == 1:
+                            break
+                        else:
+                            column_range = [0, 1, 2, 3, 4, 5, 6]
+                            not_possible += 1
                         column_range.remove(final_decision - 1)
                     rnd_index = rnd.randint(0, len(column_range) - 1)
                     final_decision = column_range[rnd_index] + 1
 
-                print("Final decision: ", final_decision)
+                if not_possible == 1:
+                    self.has_options = 1
+                    return False
+
+                # print("Column played: ", final_decision)
                 self.play(board, final_decision)
                 turn_executed += 1
 
-        print("Turn finished")
+        # print("Turn finished")
         return False
 
     def check_end_game(self, board):
